@@ -1,0 +1,75 @@
+<main class="min-h-screen bg-slate-50 p-8">
+  <div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-extrabold text-slate-800">Expense Dashboard</h1>
+        <button (click)="toggleForm()" 
+          class="bg-emerald-500 hover:bg-emerald-600 px-4 py-2 text-white font-bold rounded-lg shadow transition-all flex items-center gap-2">
+          <span>+ เพิ่มผู้ใช้งาน</span>
+        </button>
+      </div>
+
+      @if (isAdding()) {
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          
+          <div class="relative w-full max-w-2xl animate-in zoom-in-95 duration-200 shadow-2xl rounded-xl">
+            
+            <button (click)="toggleForm()" 
+              class="absolute top-3 right-3 z-10 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
+              title="ปิดหน้าต่าง">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <app-add-user 
+              [userData]="selectedUser"
+              (userAdded)="fetchUsers(); toggleForm()">
+            </app-add-user>
+
+          </div>
+        </div>
+      }
+
+      <div class="space-y-4">
+        <h2 class="text-lg font-semibold text-slate-600">รายชื่อผู้ใช้งานในระบบ</h2>
+        <div class="grid gap-4">
+          @for (user of users(); track user.username) {
+            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100 hover:border-emerald-300 transition-all">
+              <div>
+                <p class="font-bold text-slate-700">{{ user.username }}</p>
+                <p class="text-sm text-slate-500">{{ user.email }}</p>
+              </div>
+              <div class="flex items-center gap-3">
+                  <span [class]="user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700'" 
+                        class="px-3 py-1 text-xs font-bold rounded-full">
+                      {{ user.role === 'admin' ? 'Admin' : 'User' }}
+                  </span>
+
+                  <div class="h-4 w-px bg-slate-300 mx-1"></div>
+
+                  <button (click)="editUser(user)" 
+                          class="p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-full transition-all" 
+                          title="แก้ไขข้อมูล">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                  </button>
+
+                  <button (click)="deleteUser(user.username)" 
+                          class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all" 
+                          title="ลบผู้ใช้งาน">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                  </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
