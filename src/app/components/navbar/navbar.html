@@ -1,0 +1,40 @@
+<nav class="bg-slate-800 text-white p-4 flex justify-between items-center shadow-lg">
+    <div class="text-2xl font-bold tracking-tight text-emerald-400 cursor-pointer" routerLink="/">
+        Expense
+    </div>
+
+    <ul class="flex gap-6 font-medium">
+        <li>
+            <a routerLink="/" 
+               routerLinkActive="text-emerald-400" 
+               [routerLinkActiveOptions]="{exact: true}"
+               class="hover:text-emerald-400 cursor-pointer transition-colors">
+               หน้าหลัก
+            </a>
+        </li>
+
+        <li>
+            <a routerLink="/expense" 
+               routerLinkActive="text-emerald-400"
+               class="hover:text-emerald-400 cursor-pointer transition-colors">
+               รายรับ-รายจ่าย
+            </a>
+        </li>
+
+        <li>
+            <a routerLink="/dashboard-user" 
+               routerLinkActive="text-emerald-400"
+               class="hover:text-emerald-400 cursor-pointer transition-colors text-slate-400">
+               Dashborad-User
+            </a>
+        </li>
+
+        <li>
+            <a routerLink="/settings" 
+               routerLinkActive="text-emerald-400"
+               class="hover:text-emerald-400 cursor-pointer transition-colors text-slate-400">
+               ตั้งค่า
+            </a>
+        </li>
+    </ul>
+</nav>
