@@ -4,7 +4,8 @@ import { DashboardUser } from './components/dashboard-user/dashboard-user';
 import { Expense } from './components/expense/expense';
 
 export const routes: Routes = [
-    { path: '', component: Dashboard },
+    // { path: '', component: Dashboard },
+    { path: '' , component: Expense},
     { path: 'dashboard-user', component: DashboardUser },
-    { path: 'expense' , component: Expense}
+    // { path: 'expense' , component: Expense}
 ];
