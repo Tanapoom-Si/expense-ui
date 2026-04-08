@@ -12,6 +12,7 @@ import { Transaction } from '../../models/transaction.model';
   styleUrl: './expense.css',
 })
 export class Expense {
+[x: string]: any;
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
   transaction = false;
@@ -21,7 +22,8 @@ export class Expense {
   isLoading = true;
   hasError = false;
   selectedTransaction: Transaction | null = null;
-
+  protected readonly Math = Math;
+  
   constructor() {
     this.generateMonthList();
   }
@@ -46,16 +48,16 @@ export class Expense {
     this.fetchData();
   }
 
-  editTransaction(item: Transaction){
+  editTransaction(item: Transaction) {
     this.selectedTransaction = item;
     this.transaction = true;
   }
 
-  deleteTransaction(id: number){
+  deleteTransaction(id: number) {
     const isConfirmed = window.confirm('คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?');
 
-    if(isConfirmed){
-      this.http.delete(`http://localhost:8080/api/transactions/${id}`) 
+    if (isConfirmed) {
+      this.http.delete(`http://localhost:8080/api/transactions/${id}`)
         .subscribe({
           next: () => {
             this.fetchData();
@@ -63,9 +65,30 @@ export class Expense {
           error: (err) => console.error('ลบไม่สำเร็จ:', err)
         });
     }
-    
-    
 
+
+
+  }
+
+  currentPage = 1;
+  itemsPerPage = 5; // กำหนดจำนวนรายการต่อหน้า
+
+  // ฟังก์ชันสำหรับคำนวณข้อมูลที่จะแสดงในหน้านั้นๆ
+  get pagedData() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.data.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+
+  // ฟังก์ชันหาจำนวนหน้าทั้งหมด
+  get totalPages() {
+    return Math.ceil(this.data.length / this.itemsPerPage);
+  }
+
+  // ฟังก์ชันเปลี่ยนหน้า
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
   }
 
   ngOnInit() {

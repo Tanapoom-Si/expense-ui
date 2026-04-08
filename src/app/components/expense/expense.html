@@ -16,7 +16,8 @@
                 <div class="text-red-500 text-6xl mb-4">⚠️</div>
                 <p class="text-red-600 font-semibold">ไม่สามารถโหลดข้อมูลได้</p>
                 <p class="text-slate-500 mt-2">กรุณาตรวจสอบการเชื่อมต่อเซิร์ฟเวอร์</p>
-                <button (click)="fetchData()" class="mt-4 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg">
+                <button (click)="fetchData()"
+                    class="mt-4 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg">
                     ลองใหม่
                 </button>
             </div>
@@ -119,11 +120,8 @@
                     </button>
 
                     @if (transaction) {
-                    <app-add-transaction 
-                        [user] = "getObjUser()"
-                        [editData]="selectedTransaction"
-                        (closeModel)="closeTransaction()"
-                        (transactionSaved)="fetchData()">
+                    <app-add-transaction [user]="getObjUser()" [editData]="selectedTransaction"
+                        (closeModel)="closeTransaction()" (transactionSaved)="fetchData()">
                     </app-add-transaction>
                     }
                 </div>
@@ -143,7 +141,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
-                            @for (item of data; track item.id) {
+                            @for (item of pagedData; track item.id) {
                             <tr class="hover:bg-slate-50 transition-colors">
                                 <td class="px-4 py-3 font-medium text-slate-700">{{item.createDate | date:'d MMM yyyy'
                                     }}</td>
@@ -172,10 +170,38 @@
                             }
                         </tbody>
                     </table>
+                    <div class="flex items-center justify-between px-4 py-3 bg-white border-t border-slate-100">
+                        <div class="text-sm text-slate-500">
+                            แสดง {{ (currentPage - 1) * itemsPerPage + 1 }} ถึง
+                            {{ Math.min(currentPage * itemsPerPage, data.length) }} จาก {{ data.length }} รายการ
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"
+                                class="px-3 py-1 border rounded text-sm disabled:opacity-50 hover:bg-slate-50 transition">
+                                ย้อนกลับ
+                            </button>
+
+                            <div class="flex gap-1 items-center">
+                                @for (p of [].constructor(totalPages); track $index) {
+                                <button (click)="goToPage($index + 1)"
+                                    [class]="$index + 1 === currentPage ? 'bg-emerald-500 text-white' : 'hover:bg-slate-100'"
+                                    class="w-8 h-8 rounded text-sm transition">
+                                    {{ $index + 1 }}
+                                </button>
+                                }
+                            </div>
+
+                            <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
+                                class="px-3 py-1 border rounded text-sm disabled:opacity-50 hover:bg-slate-50 transition">
+                                ถัดไป
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             }
-        </div> 
+        </div>
     </div>
 </div>
