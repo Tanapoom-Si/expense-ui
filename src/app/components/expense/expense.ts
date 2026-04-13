@@ -18,7 +18,8 @@ export class Expense {
   private cdr = inject(ChangeDetectorRef);
   transaction = false;
   month: any[] = [];
-  data: Transaction[] = [];
+  realData: Transaction[] = [];
+  displayData:  Transaction[] = [];
   currentDate = new Date();
   isLoading = true;
   hasError = false;
@@ -33,9 +34,13 @@ export class Expense {
     const now = new Date();
     for (let i = 0; i < 12; i++) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+
+      const year = d.getFullYear();
+      const month = (d.getMonth()  + 1).toString().padStart(2,'0');
+
       this.month.push({
         label: d.toLocaleDateString('th-TH', { month: 'long', year: 'numeric' }),
-        value: d.toISOString()
+        value: `${year}-${month}`
       });
     }
   }
@@ -93,12 +98,12 @@ export class Expense {
   // ฟังก์ชันสำหรับคำนวณข้อมูลที่จะแสดงในหน้านั้นๆ
   get pagedData() {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    return this.data.slice(startIndex, startIndex + this.itemsPerPage);
+    return this.displayData.slice(startIndex, startIndex + this.itemsPerPage);
   }
 
   // ฟังก์ชันหาจำนวนหน้าทั้งหมด
   get totalPages() {
-    return Math.ceil(this.data.length / this.itemsPerPage);
+    return Math.ceil(this.displayData.length / this.itemsPerPage);
   }
 
   // ฟังก์ชันเปลี่ยนหน้า
@@ -183,39 +188,37 @@ export class Expense {
         next: (res) => {
           console.log('Raw API response:', res);
           //this.data = res;
-          this.data = [...res];
+          this.realData = [...res];
+          this.displayData = [...res];
           this.isLoading = false;
-          console.log('isLoading set to false:', this.isLoading);
-          console.log('ข้อมูลที่ได้รับ:', this.data);
-          console.log('Data length:', this.data.length);
           this.cdr.detectChanges(); // Force change detection
         },
         error: (err) => {
           console.error('API failed, using mock data:', err);
           console.log('Using mock data instead');
-          this.data = mockData;
+          this.realData = mockData;
+          this.displayData = mockData;
           this.isLoading = false;
-          console.log('Mock data loaded:', this.data);
         }
       })
   }
 
   getTotalIncome(): number {
-    return this.data
+    return this.displayData
       .filter(item => item.categoryId?.category_type === 'income')
       .reduce((total, item) => total + (item.amount || 0), 0);
   }
 
   getTotalExpense(): number {
-    return this.data
+    return this.displayData
       .filter(item => item.categoryId?.category_type === 'expense')
       .reduce((total, item) => total + (item.amount || 0), 0);
   }
 
   getCurrentUser(): User | undefined {
-    if (this.data.length === 0) return undefined;
+    if (this.displayData.length === 0) return undefined;
     // Return the user from the first transaction (assuming all transactions belong to the same user)
-    return this.data[0]?.user;
+    return this.displayData[0]?.user;
   }
 
   getCurrentBalance(): number {
@@ -225,13 +228,28 @@ export class Expense {
 
   getObjUser(): User | undefined {
     // ค้นหา transaction แรกที่มี object user อยู่จริงๆ
-    const transactionWithUser = this.data.find(item => item.user && typeof item.user === 'object');
+    const transactionWithUser = this.displayData.find(item => item.user && typeof item.user === 'object');
 
     if (!transactionWithUser) {
       return undefined;
     }
 
     return transactionWithUser.user;
+  }
+
+  getMonthValue(val: string){
+
+    if(!val){
+      this.displayData = this.realData;
+      return;
+    }
+
+    this.displayData = this.realData.filter(item => {
+      console.log(item.createDate);
+      const itemMonth = item.createDate.substring(0,7);
+      return itemMonth === val;
+    });
+
   }
 
 }
