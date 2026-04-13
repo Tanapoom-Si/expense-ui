@@ -4,6 +4,7 @@ import { NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../../models/user.model';
 import { Transaction } from '../../models/transaction.model';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-add-transaction',
@@ -61,54 +62,51 @@ export class AddTransaction {
   }
 
   isSaving = false;
-  save() {
-    if (!this.formData.title || !this.formData.amount) {
-      this.triggerToast('กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
-      return;
-    }
-
-    const backendApi = "http://localhost:8080/api/transaction";
-    
-
-    console.log('data for saving:', this.formData)
+  saveTransaction() {
+    const backendApi = 'http://localhost:8080/api/transaction';
     this.isSaving = true;
 
     if (this.editData) {
-      console.log("update");
+      // กรณี UPDATE
       this.http.put(backendApi, this.formData).subscribe({
-        next: (response) => {
-          this.triggerToast('อัพเดทเรียบร้อย', 'success');
-          setTimeout(() => {
-            this.isSaving = false;
-            this.close();
-          }, 1000);
-        },
-        error: (err) => {
-          this.isSaving = false;
-          this.triggerToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
-          console.error(err);
-        }
+        next: () => this.handleSuccess('อัปเดตรายการเรียบร้อยแล้ว'),
+        error: (err) => this.handleError(err)
       });
     } else {
+      // กรณี INSERT
       this.http.post(backendApi, this.formData).subscribe({
-        next: (response) => {
-          this.triggerToast('บันทึกรายการเรียบร้อยแล้ว!', 'success');
-
-          //this.transactionSaved.emit();
-          setTimeout(() => {
-            this.isSaving = false;
-            this.close();
-          }, 1000);
-        },
-        error: (err) => {
-          this.isSaving = false;
-          this.triggerToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
-          console.error(err);
-        }
+        next: () => this.handleSuccess('บันทึกรายการเรียบร้อยแล้ว'),
+        error: (err) => this.handleError(err)
       });
     }
+  }
 
+  private handleSuccess(message: string) {
+    this.close();
 
+    Swal.fire({
+      title: 'สำเร็จ!',
+      text: message,
+      icon: 'success',
+      timer: 1500, // แสดง 1.5 วินาที
+      showConfirmButton: false, // ไม่ต้องกดปุ่ม OK
+      timerProgressBar: true // แสดงแถบเวลาถอยหลัง (สวยงาม)
+    }).then(() => {
+      this.isSaving = false;
+      this.close(); // ปิดหน้าต่างหลังจาก Popup หายไป
+    });
+  }
+
+  // Helper สำหรับแสดง Error
+  private handleError(err: any) {
+    this.isSaving = false;
+    console.error(err);
+    Swal.fire({
+      title: 'เกิดข้อผิดพลาด!',
+      text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
+      icon: 'error',
+      confirmButtonText: 'ตกลง'
+    });
   }
 
   triggerToast(message: string, type: 'success' | 'error') {

@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { User } from '../../models/user.model';
 import { Transaction } from '../../models/transaction.model';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-expense',
@@ -54,21 +55,37 @@ export class Expense {
   }
 
   deleteTransaction(id: number) {
-    const isConfirmed = window.confirm('คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?');
-
-    if (isConfirmed) {
-      this.http.delete(`http://localhost:8080/api/transactions/${id}`)
+  Swal.fire({
+    title: 'คุณแน่ใจหรือไม่?',
+    text: "หากลบแล้วจะไม่สามารถกู้คืนได้!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'ใช่, ลบเลย!',
+    cancelButtonText: 'ยกเลิก'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.http.delete(`http://localhost:8080/api/transaction/${id}`)
         .subscribe({
           next: () => {
+            // แสดง Popup ลบสำเร็จแล้วจางออกเองภายใน 1.5 วินาที
+            Swal.fire({
+              title: 'ลบเรียบร้อย!',
+              text: 'รายการของคุณถูกลบแล้ว',
+              icon: 'success',
+              timer: 1500, // เวลา (ms)
+              showConfirmButton: false // ไม่ต้องโชว์ปุ่ม OK
+            });
             this.fetchData();
           },
-          error: (err) => console.error('ลบไม่สำเร็จ:', err)
+          error: (err) => {
+            Swal.fire('เกิดข้อผิดพลาด!', 'ไม่สามารถลบข้อมูลได้', 'error');
+          }
         });
     }
-
-
-
-  }
+  });
+}
 
   currentPage = 1;
   itemsPerPage = 5; // กำหนดจำนวนรายการต่อหน้า
