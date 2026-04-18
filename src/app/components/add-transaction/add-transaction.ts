@@ -66,6 +66,11 @@ export class AddTransaction {
     const backendApi = 'http://localhost:8080/api/transaction';
     this.isSaving = true;
 
+    // Ensure user data is included in the transaction
+    if (!this.formData.user || Object.keys(this.formData.user).length === 0) {
+      this.formData.user = this.user || {} as User;
+    }
+
     if (this.editData) {
       // UPDATE case
       this.http.put(backendApi, this.formData).subscribe({
@@ -73,7 +78,7 @@ export class AddTransaction {
         error: (err) => this.handleError(err)
       });
     } else {
-      // INSERT case
+      // INSERT case - send user data to backend
       this.http.post(backendApi, this.formData).subscribe({
         next: () => this.handleSuccess('บันทึกรายการเรียบร้อยแล้ว'),
         error: (err) => this.handleError(err)

@@ -5,7 +5,7 @@ import { DecimalPipe, DatePipe } from '@angular/common';
 import { User } from '../../models/user.model';
 import { Transaction } from '../../models/transaction.model';
 import Swal from 'sweetalert2';
-import { forkJoin } from 'rxjs';
+import { forkJoin, switchMap } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -120,19 +120,53 @@ export class Expense {
     this.fetchData();
   }
 
+  /**
+   * Fetch transactions with user authorization filter using POST request
+   * @param user User identity object for authorization
+   * @returns Observable of transactions filtered by user
+   */
+  private fetchTransactionsWithUserAuth(user: User) {
+    const transactionPayload = { user };
+    return this.http.post<Transaction[]>('http://localhost:8080/api/transaction/filter', transactionPayload);
+  }
+
+  /**
+   * Fetch all users data
+   * @returns Observable of users array
+   */
+  private fetchUsers() {
+    return this.http.get<User[]>('http://localhost:8080/api/user');
+  }
+
+  /**
+   * Main data fetch method using RxJS best practices
+   * Fetches users first, then uses the first user to authorize transaction fetch via POST
+   */
   fetchData() {
     this.isLoading = true;
     this.hasError = false;
 
-    // Fetch transactions and users concurrently
-    const transactions$ = this.http.get<Transaction[]>('http://localhost:8080/api/transaction');
-    const user$ = this.http.get<User[]>('http://localhost:8080/api/user');
-
-    forkJoin({
-      transactions: transactions$,
-      users: user$
-    })
+    this.fetchUsers()
       .pipe(
+        switchMap((users) => {
+          // Store users and use first user for authorization
+          this.userData = users;
+          const currentUser = users.length > 0 ? users[0] : null;
+
+          // If no user available, return empty transactions
+          if (!currentUser) {
+            return forkJoin({
+              transactions: Promise.resolve([] as Transaction[]),
+              users: Promise.resolve(users)
+            });
+          }
+
+          // Fetch transactions with user authorization using POST
+          return forkJoin({
+            transactions: this.fetchTransactionsWithUserAuth(currentUser),
+            users: Promise.resolve(users)
+          });
+        }),
         finalize(() => {
           this.isLoading = false;
           this.cdr.detectChanges();
@@ -142,13 +176,11 @@ export class Expense {
         next: (res) => {
           this.realData = res.transactions;
           this.displayData = [...res.transactions];
-          this.userData = res.users;
           console.log('Data loaded successfully', res);
         },
         error: (err) => {
           console.error('API Error', err);
           this.hasError = true;
-          // Fallback to mock data here if needed
         }
       });
   }
@@ -168,9 +200,7 @@ export class Expense {
   }
 
   getCurrentUser(): User | undefined {
-    if (this.realData.length === 0) return undefined;
-    // Return the user from the first transaction (assuming all transactions belong to the same user)
-    return this.realData[0]?.user;
+    return this.userData.length > 0 ? this.userData[0] : undefined;
   }
 
   getCurrentBalance(): number {
@@ -179,14 +209,8 @@ export class Expense {
   }
 
   getObjUser(): User | undefined {
-    // Find first transaction with valid user object
-    const transactionWithUser = this.realData.find(item => item.user && typeof item.user === 'object');
-
-    if (!transactionWithUser) {
-      return undefined;
-    }
-
-    return transactionWithUser.user;
+    // Return first user from userData which is populated from API
+    return this.userData.length > 0 ? this.userData[0] : undefined;
   }
 
   getMonthValue(val: string) {
