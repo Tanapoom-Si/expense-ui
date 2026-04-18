@@ -12,10 +12,10 @@ export class AddUser implements OnChanges{
   private http = inject(HttpClient);
   userAdded = output<void>();
 
-  // สร้างตัวแปรมารับค่าจากหน้า Dashboard
+  // Receive data from Dashboard
   @Input() userData: any = null;
 
-  // สร้างตัวแปรมาผูกกับช่อง Input ใน HTML
+  // Bind to form input fields
   username: string = '';
   email: string = '';
   roleValue: string = '';

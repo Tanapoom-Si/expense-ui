@@ -49,7 +49,7 @@ export class AddTransaction {
     }
 
     if (this.editData) {
-      console.log('โหมดแก้ไข: มีข้อมูลส่งมานะ', this.editData);
+      console.log('Edit mode: data received', this.editData);
       this.formData = {
         id: this.editData.id,
         type: this.editData.categoryId.category_type,
@@ -67,13 +67,13 @@ export class AddTransaction {
     this.isSaving = true;
 
     if (this.editData) {
-      // กรณี UPDATE
+      // UPDATE case
       this.http.put(backendApi, this.formData).subscribe({
         next: () => this.handleSuccess('อัปเดตรายการเรียบร้อยแล้ว'),
         error: (err) => this.handleError(err)
       });
     } else {
-      // กรณี INSERT
+      // INSERT case
       this.http.post(backendApi, this.formData).subscribe({
         next: () => this.handleSuccess('บันทึกรายการเรียบร้อยแล้ว'),
         error: (err) => this.handleError(err)
@@ -85,19 +85,19 @@ export class AddTransaction {
     this.close();
 
     Swal.fire({
-      title: 'สำเร็จ!',
+      title: 'Success!',
       text: message,
       icon: 'success',
-      timer: 1500, // แสดง 1.5 วินาที
-      showConfirmButton: false, // ไม่ต้องกดปุ่ม OK
-      timerProgressBar: true // แสดงแถบเวลาถอยหลัง (สวยงาม)
+      timer: 1500,
+      showConfirmButton: false,
+      timerProgressBar: true
     }).then(() => {
       this.isSaving = false;
-      this.close(); // ปิดหน้าต่างหลังจาก Popup หายไป
+      this.close();
     });
   }
 
-  // Helper สำหรับแสดง Error
+  // Helper for displaying errors
   private handleError(err: any) {
     this.isSaving = false;
     console.error(err);

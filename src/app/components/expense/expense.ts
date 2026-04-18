@@ -5,6 +5,8 @@ import { DecimalPipe, DatePipe } from '@angular/common';
 import { User } from '../../models/user.model';
 import { Transaction } from '../../models/transaction.model';
 import Swal from 'sweetalert2';
+import { forkJoin } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-expense',
@@ -13,19 +15,20 @@ import Swal from 'sweetalert2';
   styleUrl: './expense.css',
 })
 export class Expense {
-[x: string]: any;
+  [x: string]: any;
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
   transaction = false;
   month: any[] = [];
   realData: Transaction[] = [];
-  displayData:  Transaction[] = [];
+  displayData: Transaction[] = [];
+  userData: User[] = [];
   currentDate = new Date();
   isLoading = true;
   hasError = false;
   selectedTransaction: Transaction | null = null;
   protected readonly Math = Math;
-  
+
   constructor() {
     this.generateMonthList();
   }
@@ -36,7 +39,7 @@ export class Expense {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
 
       const year = d.getFullYear();
-      const month = (d.getMonth()  + 1).toString().padStart(2,'0');
+      const month = (d.getMonth() + 1).toString().padStart(2, '0');
 
       this.month.push({
         label: d.toLocaleDateString('th-TH', { month: 'long', year: 'numeric' }),
@@ -60,53 +63,53 @@ export class Expense {
   }
 
   deleteTransaction(id: number) {
-  Swal.fire({
-    title: 'คุณแน่ใจหรือไม่?',
-    text: "หากลบแล้วจะไม่สามารถกู้คืนได้!",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'ใช่, ลบเลย!',
-    cancelButtonText: 'ยกเลิก'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.http.delete(`http://localhost:8080/api/transaction/${id}`)
-        .subscribe({
-          next: () => {
-            // แสดง Popup ลบสำเร็จแล้วจางออกเองภายใน 1.5 วินาที
-            Swal.fire({
-              title: 'ลบเรียบร้อย!',
-              text: 'รายการของคุณถูกลบแล้ว',
-              icon: 'success',
-              timer: 1500, // เวลา (ms)
-              showConfirmButton: false // ไม่ต้องโชว์ปุ่ม OK
-            });
-            this.fetchData();
-          },
-          error: (err) => {
-            Swal.fire('เกิดข้อผิดพลาด!', 'ไม่สามารถลบข้อมูลได้', 'error');
-          }
-        });
-    }
-  });
-}
+    Swal.fire({
+      title: 'คุณแน่ใจหรือไม่?',
+      text: "หากลบแล้วจะไม่สามารถกู้คืนได้!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ใช่, ลบเลย!',
+      cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.http.delete(`http://localhost:8080/api/transaction/${id}`)
+          .subscribe({
+            next: () => {
+              // Show success message that auto-closes
+              Swal.fire({
+                title: 'ลบเรียบร้อย!',
+                text: 'รายการของคุณถูกลบแล้ว',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+              });
+              this.fetchData();
+            },
+            error: (err) => {
+              Swal.fire('เกิดข้อผิดพลาด!', 'ไม่สามารถลบข้อมูลได้', 'error');
+            }
+          });
+      }
+    });
+  }
 
   currentPage = 1;
-  itemsPerPage = 5; // กำหนดจำนวนรายการต่อหน้า
+  itemsPerPage = 5;
 
-  // ฟังก์ชันสำหรับคำนวณข้อมูลที่จะแสดงในหน้านั้นๆ
+  // Get paginated data for current page
   get pagedData() {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     return this.displayData.slice(startIndex, startIndex + this.itemsPerPage);
   }
 
-  // ฟังก์ชันหาจำนวนหน้าทั้งหมด
+  // Calculate total number of pages
   get totalPages() {
     return Math.ceil(this.displayData.length / this.itemsPerPage);
   }
 
-  // ฟังก์ชันเปลี่ยนหน้า
+  // Navigate to specified page
   goToPage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
@@ -114,111 +117,60 @@ export class Expense {
   }
 
   ngOnInit() {
-    this.fetchData(); // สั่งให้ดึงข้อมูลทันทีที่ Component เริ่มทำงาน
+    this.fetchData();
   }
 
   fetchData() {
-    console.log('--- REFRESHING DATA ---');
     this.isLoading = true;
     this.hasError = false;
 
-    console.log('Starting to fetch data from API...');
+    // Fetch transactions and users concurrently
+    const transactions$ = this.http.get<Transaction[]>('http://localhost:8080/api/transaction');
+    const user$ = this.http.get<User[]>('http://localhost:8080/api/user');
 
-    // Test with mock data first
-    const mockData = [
-      {
-        "amount": 20000,
-        "categoryId": {
-          "category_id": 1,
-          "category_name": "salary",
-          "category_type": "income"
-        },
-        "createDate": "2026-03-01",
-        "id": 1,
-        "note": null,
-        "user": {
-          "balance": 20000,
-          "email": "time@gmail.com",
-          "password": "1234",
-          "role": "user",
-          "username": "time"
-        }
-      },
-      {
-        "amount": 5000,
-        "categoryId": {
-          "category_id": 2,
-          "category_name": "food",
-          "category_type": "expense"
-        },
-        "createDate": "2026-03-02",
-        "id": 2,
-        "note": "lunch",
-        "user": {
-          "balance": 15000,
-          "email": "time@gmail.com",
-          "password": "1234",
-          "role": "user",
-          "username": "time"
-        }
-      },
-      {
-        "amount": 3000,
-        "categoryId": {
-          "category_id": 3,
-          "category_name": "freelance",
-          "category_type": "income"
-        },
-        "createDate": "2026-03-03",
-        "id": 3,
-        "note": null,
-        "user": {
-          "balance": 18000,
-          "email": "time@gmail.com",
-          "password": "1234",
-          "role": "user",
-          "username": "time"
-        }
-      }
-    ];
-
-    // Try API first, fallback to mock data
-    this.http.get<any[]>('http://localhost:8080/api/transaction')
+    forkJoin({
+      transactions: transactions$,
+      users: user$
+    })
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
       .subscribe({
         next: (res) => {
-          console.log('Raw API response:', res);
-          //this.data = res;
-          this.realData = [...res];
-          this.displayData = [...res];
-          this.isLoading = false;
-          this.cdr.detectChanges(); // Force change detection
+          this.realData = res.transactions;
+          this.displayData = [...res.transactions];
+          this.userData = res.users;
+          console.log('Data loaded successfully', res);
         },
         error: (err) => {
-          console.error('API failed, using mock data:', err);
-          console.log('Using mock data instead');
-          this.realData = mockData;
-          this.displayData = mockData;
-          this.isLoading = false;
+          console.error('API Error', err);
+          this.hasError = true;
+          // Fallback to mock data here if needed
         }
-      })
+      });
   }
 
+
+
   getTotalIncome(): number {
-    return this.displayData
+    return this.realData
       .filter(item => item.categoryId?.category_type === 'income')
       .reduce((total, item) => total + (item.amount || 0), 0);
   }
 
   getTotalExpense(): number {
-    return this.displayData
+    return this.realData
       .filter(item => item.categoryId?.category_type === 'expense')
       .reduce((total, item) => total + (item.amount || 0), 0);
   }
 
   getCurrentUser(): User | undefined {
-    if (this.displayData.length === 0) return undefined;
+    if (this.realData.length === 0) return undefined;
     // Return the user from the first transaction (assuming all transactions belong to the same user)
-    return this.displayData[0]?.user;
+    return this.realData[0]?.user;
   }
 
   getCurrentBalance(): number {
@@ -227,8 +179,8 @@ export class Expense {
   }
 
   getObjUser(): User | undefined {
-    // ค้นหา transaction แรกที่มี object user อยู่จริงๆ
-    const transactionWithUser = this.displayData.find(item => item.user && typeof item.user === 'object');
+    // Find first transaction with valid user object
+    const transactionWithUser = this.realData.find(item => item.user && typeof item.user === 'object');
 
     if (!transactionWithUser) {
       return undefined;
@@ -237,19 +189,33 @@ export class Expense {
     return transactionWithUser.user;
   }
 
-  getMonthValue(val: string){
+  getMonthValue(val: string) {
 
-    if(!val){
+    if (!val) {
       this.displayData = this.realData;
       return;
     }
 
     this.displayData = this.realData.filter(item => {
       console.log(item.createDate);
-      const itemMonth = item.createDate.substring(0,7);
+      const itemMonth = item.createDate.substring(0, 7);
       return itemMonth === val;
     });
 
+  }
+
+
+  onSearch(searchItem: string) {
+    if (!searchItem) {
+      this.displayData = this.realData;
+      return;
+    }
+
+    const searchLower = searchItem.toLowerCase();
+
+    this.displayData = this.realData.filter(item => {
+      return item.categoryId.category_name.toLowerCase().includes(searchLower) || item.categoryId.category_type.toLowerCase().includes(searchLower);
+    })
   }
 
 }

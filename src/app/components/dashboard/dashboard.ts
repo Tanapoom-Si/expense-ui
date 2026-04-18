@@ -23,7 +23,7 @@ export class Dashboard implements OnInit {
     this.http.get<any[]>('http://localhost:8080/api/user')
       .subscribe({
         next: (data) => this.users.set(data),
-        error: (err) => console.error('ดึงข้อมูลไม่สำเร็จ:', err)
+        error: (err) => console.error('Failed to fetch users:', err)
       })
   }
 
