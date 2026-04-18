@@ -1,8 +1,79 @@
+/* Animations */
 @keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  from { 
+    transform: translateX(100%); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateX(0); 
+    opacity: 1; 
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Premium Modal Backdrop Fade */
+@keyframes modalBackdropFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Premium Modal Content Enter */
+@keyframes modalContentEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .animate-toast {
   animation: slideIn 0.3s ease-out forwards;
+}
+
+/* Smooth transitions for form elements */
+input, select {
+  transition: all 0.3s ease-in-out;
+}
+
+input:focus, select:focus {
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+/* Button effects */
+button {
+  transition: all 0.3s ease-in-out;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* Backdrop blur support */
+.backdrop-blur-xl {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Premium modal animations */
+.animate-modal-backdrop {
+  animation: modalBackdropFade 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.animate-modal-content {
+  animation: modalContentEnter 0.5s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 }

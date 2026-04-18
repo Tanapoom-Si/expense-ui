@@ -1,40 +1,25 @@
-<nav class="bg-slate-800 text-white p-4 flex justify-between items-center shadow-lg">
-    <div class="text-2xl font-bold tracking-tight text-emerald-400 cursor-pointer" routerLink="/">
-        Expense
+<nav class="backdrop-blur-xl bg-gradient-to-r from-slate-900/80 via-slate-800/80 to-slate-900/80 border-b border-white/10 text-white px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center shadow-lg sticky top-0 z-40">
+    <div class="flex items-center gap-3">
+        <div class="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </div>
+        <div class="text-2xl font-bold tracking-tight cursor-pointer hover:opacity-80 transition-opacity" routerLink="/">
+            <span class="bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent">Expense</span>
+            <span class="text-slate-400 text-sm font-normal ml-1">Tracker</span>
+        </div>
     </div>
 
-    <ul class="flex gap-6 font-medium">
-        <!-- <li>
+    <ul class="flex gap-8 font-medium items-center">
+        <li>
             <a routerLink="/" 
-               routerLinkActive="text-emerald-400" 
+               routerLinkActive="text-emerald-400 border-b-2 border-emerald-400"
                [routerLinkActiveOptions]="{exact: true}"
-               class="hover:text-emerald-400 cursor-pointer transition-colors">
-               หน้าหลัก
-            </a>
-        </li> -->
-
-        <li>
-            <a routerLink="/" 
-               routerLinkActive="text-emerald-400"
-               class="hover:text-emerald-400 cursor-pointer transition-colors">
-               รายรับ-รายจ่าย
+               class="py-2 hover:text-emerald-400 cursor-pointer transition-all duration-200 relative group">
+               <span>รายรับ-รายจ่าย</span>
+               <div class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-400 to-teal-400 group-hover:w-full transition-all duration-300"></div>
             </a>
         </li>
-
-        <!-- <li>
-            <a routerLink="/dashboard-user" 
-               routerLinkActive="text-emerald-400"
-               class="hover:text-emerald-400 cursor-pointer transition-colors text-slate-400">
-               Dashborad-User
-            </a>
-        </li>
-
-        <li>
-            <a routerLink="/settings" 
-               routerLinkActive="text-emerald-400"
-               class="hover:text-emerald-400 cursor-pointer transition-colors text-slate-400">
-               ตั้งค่า
-            </a>
-        </li> -->
     </ul>
 </nav>

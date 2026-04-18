@@ -1,0 +1,38 @@
+/* Navbar glassmorphism and animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Navbar sticky animation */
+nav {
+  animation: slideDown 0.3s ease-out;
+}
+
+/* Backdrop blur support */
+.backdrop-blur-xl {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Link hover effects */
+a {
+  transition: all 0.3s ease-in-out;
+  position: relative;
+}
+
+/* Smooth transitions */
+* {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Logo animation */
+.text-transparent {
+  animation: slideDown 0.3s ease-out;
+}

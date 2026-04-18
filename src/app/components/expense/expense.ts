@@ -1,7 +1,7 @@
 import { Component, inject, signal, ChangeDetectorRef } from '@angular/core';
 import { AddTransaction } from '../add-transaction/add-transaction';
 import { HttpClient } from '@angular/common/http';
-import { DecimalPipe, DatePipe } from '@angular/common';
+import { DecimalPipe, DatePipe, NgClass } from '@angular/common';
 import { User } from '../../models/user.model';
 import { Transaction } from '../../models/transaction.model';
 import Swal from 'sweetalert2';
@@ -10,7 +10,7 @@ import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-expense',
-  imports: [AddTransaction, DecimalPipe, DatePipe],
+  imports: [AddTransaction, DecimalPipe, DatePipe, NgClass],
   templateUrl: './expense.html',
   styleUrl: './expense.css',
 })
@@ -204,8 +204,10 @@ export class Expense {
   }
 
   getCurrentBalance(): number {
-    const user = this.getCurrentUser();
-    return user?.balance || 0;
+    // Calculate balance from transactions: income - expense
+    const totalIncome = this.getTotalIncome();
+    const totalExpense = this.getTotalExpense();
+    return totalIncome - totalExpense;
   }
 
   getObjUser(): User | undefined {
@@ -237,8 +239,9 @@ export class Expense {
 
     const searchLower = searchItem.toLowerCase();
 
+    // Search by category name
     this.displayData = this.realData.filter(item => {
-      return item.categoryId.category_name.toLowerCase().includes(searchLower) || item.categoryId.category_type.toLowerCase().includes(searchLower);
+      return item.categoryId.category_name.toLowerCase().includes(searchLower);
     })
   }
 

@@ -1,0 +1,52 @@
+/* Glassmorphism and animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Form elements */
+input, select {
+  transition: all 0.3s ease-in-out;
+  animation: fadeIn 0.3s ease-out;
+}
+
+input:focus, select:focus {
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Button hover effects */
+button {
+  transition: all 0.3s ease-in-out;
+}
+
+button:hover {
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.2);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* Backdrop blur support */
+.backdrop-blur-xl {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}

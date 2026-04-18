@@ -1,0 +1,86 @@
+/* Dashboard User animations and effects */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Premium Modal Backdrop Fade */
+@keyframes modalBackdropFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Premium Modal Content Enter */
+@keyframes modalContentEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Backdrop blur support */
+.backdrop-blur-xl {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Premium modal animations */
+.animate-modal-backdrop {
+  animation: modalBackdropFade 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.animate-modal-content {
+  animation: modalContentEnter 0.5s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+/* User cards */
+.group {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.group:hover {
+  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.1);
+}
+
+/* Button effects */
+button {
+  transition: all 0.3s ease-in-out;
+}
+
+button:hover:not(:disabled) {
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.2);
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Smooth transitions */
+* {
+  transition: all 0.3s ease-in-out;
+}

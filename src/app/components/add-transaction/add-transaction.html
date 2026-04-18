@@ -15,13 +15,14 @@
 }
 
 <div (click)="close()"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+    class="fixed inset-0 z-50 flex items-center justify-center pointer-events-auto animate-modal-backdrop">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-md"></div>
 
     <div (click)="$event.stopPropagation()"
-        class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+        class="relative backdrop-blur-xl bg-white/95 rounded-2xl shadow-2xl border border-white/30 w-full max-w-md overflow-hidden animate-modal-content p-0">
 
-        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-            <h3 class="font-bold text-lg text-slate-800">📝 จดบันทึกรายการ</h3>
+        <div class="px-6 py-4 border-b border-white/20 flex justify-between items-center bg-gradient-to-r from-emerald-50/50 to-teal-50/50">
+            <h3 class="font-bold text-lg bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">📝 จดบันทึกรายการ</h3>
             <button (click)="close()" class="text-slate-400 hover:text-red-500 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -32,46 +33,45 @@
 
         <div class="p-6 space-y-4">
 
-            <div class="flex bg-slate-100 p-1 rounded-lg">
-                <button (click)="setType('income')" class="flex-1 py-2 rounded-md text-sm font-bold transition-all"
-                    [ngClass]="formData.type === 'income' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500'">
+            <div class="flex bg-gradient-to-r from-slate-50 to-slate-100 p-1.5 rounded-xl">
+                <button (click)="setType('income')" class="flex-1 py-2 rounded-lg text-sm font-bold transition-all duration-200 transform"
+                    [ngClass]="formData.type === 'income' ? 'bg-white text-emerald-600 shadow-md scale-105' : 'text-slate-500 hover:text-slate-700'">
                     + รายรับ
                 </button>
 
-                <button (click)="setType('expense')" class="flex-1 py-2 rounded-md text-sm font-bold transition-all"
-                    [ngClass]="formData.type === 'expense' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500'">
+                <button (click)="setType('expense')" class="flex-1 py-2 rounded-lg text-sm font-bold transition-all duration-200 transform"
+                    [ngClass]="formData.type === 'expense' ? 'bg-white text-red-600 shadow-md scale-105' : 'text-slate-500 hover:text-slate-700'">
                     - รายจ่าย
                 </button>
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">วันที่</label>
+                <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">วันที่</label>
                 <input type="date" [(ngModel)]="formData.date"
-                    class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    class="w-full px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white/80 transition-all shadow-sm hover:shadow-md">
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">รายการ</label>
+                <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">รายการ</label>
                 <input type="text" [(ngModel)]="formData.title" placeholder="เช่น เงินเดือน"
-                    class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    class="w-full px-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white/80 transition-all shadow-sm hover:shadow-md"
                     required>
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">จำนวนเงิน (บาท)</label>
+                <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">จำนวนเงิน (บาท)</label>
                 <div class="relative">
-                    <span class="absolute left-3 top-2 text-slate-400">฿</span>
+                    <span class="absolute left-4 top-3 text-emerald-600 font-bold">฿</span>
                     <input type="number" [(ngModel)]="formData.amount" placeholder="0.00"
-                        class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-slate-700"
-                        required>
+                        class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white/80 font-bold text-slate-700 transition-all shadow-sm hover:shadow-md">
                 </div>
             </div>
 
         </div>
 
-        <div class="p-4 border-t border-slate-100 bg-slate-50">
+        <div class="p-4 border-t border-white/20 bg-gradient-to-r from-slate-50/50 to-slate-100/50">
             <button (click)="saveTransaction()" [disabled]="isSaving"
-                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-emerald-200 transition-all">
+                class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-2.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
                 @if(isSaving){
                 <span>กำลังบันทึกข้อมูล...</span>
                 } @else{
