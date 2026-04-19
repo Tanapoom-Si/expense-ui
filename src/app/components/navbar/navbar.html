@@ -1,25 +1,111 @@
-<nav class="backdrop-blur-xl bg-gradient-to-r from-slate-900/80 via-slate-800/80 to-slate-900/80 border-b border-white/10 text-white px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center shadow-lg sticky top-0 z-40">
-    <div class="flex items-center gap-3">
-        <div class="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg shadow-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-screen bg-gradient-to-b from-slate-950 via-blue-950/40 to-slate-950 border-r border-white/5 shadow-2xl flex flex-col transition-all duration-300 ease-out backdrop-blur-sm overflow-hidden"
+  [class.w-64]="!isCollapsed()"
+  [class.w-20]="isCollapsed()"
+  [class.hidden]="!isSidebarOpen()">
+  
+  <!-- Header with Logo -->
+  <div class="px-6 py-6 border-b border-white/10 flex items-center justify-center transition-all duration-300 ease-out flex-shrink-0"
+    [class.px-2]="isCollapsed()">
+    @if (!isCollapsed()) {
+    <div class="flex items-center gap-3 w-full">
+      <div class="p-2 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg shadow-lg flex-shrink-0 hover:shadow-emerald-500/50 transition-all duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div>
+        <div class="text-lg font-bold tracking-tight">
+          <span class="bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent">Expense</span>
         </div>
-        <div class="text-2xl font-bold tracking-tight cursor-pointer hover:opacity-80 transition-opacity" routerLink="/">
-            <span class="bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent">Expense</span>
-            <span class="text-slate-400 text-sm font-normal ml-1">Tracker</span>
-        </div>
+        <div class="text-xs text-slate-400">Tracker</div>
+      </div>
     </div>
+    }
+    @if (isCollapsed()) {
+    <div class="p-2.5 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg shadow-lg hover:shadow-emerald-500/50 transition-all duration-300 flex items-center justify-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+    }
+  </div>
 
-    <ul class="flex gap-8 font-medium items-center">
-        <li>
-            <a routerLink="/" 
-               routerLinkActive="text-emerald-400 border-b-2 border-emerald-400"
-               [routerLinkActiveOptions]="{exact: true}"
-               class="py-2 hover:text-emerald-400 cursor-pointer transition-all duration-200 relative group">
-               <span>รายรับ-รายจ่าย</span>
-               <div class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-400 to-teal-400 group-hover:w-full transition-all duration-300"></div>
-            </a>
-        </li>
-    </ul>
-</nav>
+  <!-- Navigation Menu -->
+  <nav class="flex-1 px-2 py-4 space-y-1 overflow-hidden transition-all duration-300"
+    [class.px-4]="!isCollapsed()">
+    <!-- Dashboard Link (Only Navigation Item) -->
+    <a routerLink="/" 
+       routerLinkActive="bg-gradient-to-r from-emerald-500/25 to-teal-500/25 border-l-2 border-emerald-400 shadow-lg shadow-emerald-500/20"
+       [routerLinkActiveOptions]="{exact: true}"
+       class="flex items-center justify-center lg:justify-start gap-4 px-2 py-3 text-slate-200 hover:bg-slate-700/40 rounded-lg transition-all duration-300 ease-out group"
+       [class.px-4]="!isCollapsed()"
+       [title]="isCollapsed() ? 'Dashboard' : ''">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-400 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 11l4-4m0 0l4 4m-4-4V3" />
+      </svg>
+      @if (!isCollapsed()) {
+      <span class="font-medium text-sm flex-1">Dashboard</span>
+      }
+    </a>
+  </nav>
+
+  <!-- Bottom Section: Collapse Toggle (Hidden on Mobile) -->
+  <div class="border-t border-white/10 px-2 py-4 space-y-2 hidden lg:block flex-shrink-0 transition-all duration-300"
+    [class.px-4]="!isCollapsed()">
+    <button (click)="collapseSidebar()"
+      class="w-full flex items-center justify-center gap-3 px-2 py-3 text-slate-300 hover:bg-slate-700/50 rounded-lg transition-all duration-200"
+      [class.px-4]="!isCollapsed()"
+      [title]="isCollapsed() ? 'Expand' : 'Collapse'">
+      @if (!isCollapsed()) {
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      <span class="text-sm font-medium">Collapse</span>
+      } @else {
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+      </svg>
+      }
+    </button>
+
+    <!-- User Profile -->
+    <div class="pt-2 border-t border-white/10">
+      <div class="flex items-center justify-center lg:justify-start gap-3 px-2 py-3 rounded-lg hover:bg-slate-700/50 transition-all duration-200 cursor-pointer group"
+        [class.px-4]="!isCollapsed()"
+        [title]="isCollapsed() ? 'Profile' : ''">
+        <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-full flex items-center justify-center flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+          </svg>
+        </div>
+        @if (!isCollapsed()) {
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-white truncate">User</p>
+          <p class="text-xs text-slate-400 truncate">Profile</p>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Mobile Hamburger Menu (visible on small screens) -->
+<button (click)="toggleSidebar()"
+  class="fixed top-4 left-4 z-50 md:hidden p-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl shadow-lg transition-all duration-300 hover:shadow-emerald-500/50 active:scale-95"
+  [title]="isSidebarOpen() ? 'Close menu' : 'Open menu'">
+  @if (isSidebarOpen()) {
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+  </svg>
+  } @else {
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+  </svg>
+  }
+</button>
+
+<!-- Mobile Sidebar Overlay -->
+@if (isSidebarOpen()) {
+<div class="fixed inset-0 bg-black/50 z-30 md:hidden" (click)="toggleSidebar()" (keydown.escape)="toggleSidebar()"></div>
+}

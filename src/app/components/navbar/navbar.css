@@ -1,38 +1,94 @@
-/* Navbar glassmorphism and animations */
-@keyframes slideDown {
+/* Sidebar animations and professional styling */
+@keyframes slideInFromLeft {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateX(-20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 }
 
-/* Navbar sticky animation */
-nav {
-  animation: slideDown 0.3s ease-out;
+/* Base sidebar styling with smooth transitions */
+aside {
+  animation: slideInFromLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Backdrop blur support */
-.backdrop-blur-xl {
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+/* Smooth scrollbar styling */
+aside::-webkit-scrollbar {
+  width: 6px;
 }
 
-/* Link hover effects */
-a {
-  transition: all 0.3s ease-in-out;
+aside::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+aside::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.4);
+  border-radius: 3px;
+  transition: background 0.3s ease-in-out;
+}
+
+aside::-webkit-scrollbar-thumb:hover {
+  background: rgba(71, 85, 105, 0.7);
+}
+
+/* Navigation links professional styling */
+a[routerLink] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 }
 
-/* Smooth transitions */
-* {
-  transition: all 0.3s ease-in-out;
+/* Smooth icon animations on hover */
+a[routerLink] svg,
+button svg,
+div svg {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              filter 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Logo animation */
-.text-transparent {
-  animation: slideDown 0.3s ease-out;
+/* Icon glow effect on hover */
+a[routerLink]:hover svg {
+  filter: brightness(1.3) drop-shadow(0 0 4px rgba(16, 185, 129, 0.4));
 }
+
+/* Active link indicator */
+a[routerLinkActive="bg-gradient-to-r from-emerald-500/25 to-teal-500/25 border-l-2 border-emerald-400 shadow-lg shadow-emerald-500/20"] {
+  box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.15);
+}
+
+/* Responsive behavior for mobile */
+@media (max-width: 1024px) {
+  aside {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 40;
+  }
+}
+
+@media (max-width: 640px) {
+  aside {
+    width: 16rem !important;
+  }
+}
+
+/* Ensure proper spacing for collapsed state */
+.w-20 a,
+.w-20 button,
+.w-20 div {
+  justify-content: center;
+}
+
+/* Smooth text visibility transitions */
+@supports (-webkit-mask-image: url(#a)) {
+  span:not(.bg-gradient-to-r) {
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+

@@ -87,7 +87,8 @@ export class AddTransaction {
   }
 
   private handleSuccess(message: string) {
-    this.close();
+    // Emit event to notify parent/app to refresh data
+    this.transactionSaved.emit();
 
     Swal.fire({
       title: 'Success!',

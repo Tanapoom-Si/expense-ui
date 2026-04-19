@@ -1,5 +1,16 @@
 <app-navbar></app-navbar>
-<router-outlet></router-outlet>
+
+<!-- Main Layout Container -->
+<div class="flex h-screen w-screen bg-gradient-to-br from-slate-50 via-slate-50 to-slate-100 overflow-hidden">
+  <!-- Sidebar is part of navbar component - fixed on left -->
+  
+  <!-- Main Content Area with dynamic margin based on sidebar state -->
+  <main class="flex-1 lg:ml-64 overflow-y-auto transition-all duration-300 ease-out overflow-x-hidden" id="mainContent">
+    <div class="min-h-screen w-full p-2 sm:p-4 md:p-6 lg:p-8">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>
 
 <!-- Global Modal Container -->
 @if (isTransactionModalOpen()) {

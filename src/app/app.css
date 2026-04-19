@@ -1,0 +1,101 @@
+/* Global app layout styles with smooth transitions */
+
+:host {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+/* Ensure body takes full height */
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Main content area with smooth transitions */
+main {
+  height: 100vh;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Responsive: Adjust main content area when sidebar is hidden */
+@media (max-width: 768px) {
+  main {
+    margin-left: 0 !important;
+  }
+}
+
+/* Fine-tune scrollbar for main content */
+main::-webkit-scrollbar {
+  width: 8px;
+}
+
+main::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.05);
+}
+
+main::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.4);
+  border-radius: 4px;
+  transition: background 0.3s ease-in-out;
+}
+
+main::-webkit-scrollbar-thumb:hover {
+  background: rgba(71, 85, 105, 0.7);
+}
+
+/* Smooth content transitions */
+router-outlet ~ * {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fine-tune scrollbar for main content */
+main::-webkit-scrollbar {
+  width: 8px;
+}
+
+main::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.05);
+}
+
+main::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.4);
+  border-radius: 4px;
+  transition: background 0.3s ease-in-out;
+}
+
+main::-webkit-scrollbar-thumb:hover {
+  background: rgba(71, 85, 105, 0.7);
+}
+
+/* Smooth content transitions */
+router-outlet ~ * {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
