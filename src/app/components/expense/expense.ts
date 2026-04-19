@@ -7,10 +7,11 @@ import { Transaction } from '../../models/transaction.model';
 import Swal from 'sweetalert2';
 import { forkJoin, switchMap } from 'rxjs';
 import { finalize } from 'rxjs/operators';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-expense',
-  imports: [AddTransaction, DecimalPipe, DatePipe, NgClass],
+  imports: [DecimalPipe, DatePipe, NgClass],
   templateUrl: './expense.html',
   styleUrl: './expense.css',
 })
@@ -18,7 +19,7 @@ export class Expense {
   [x: string]: any;
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
-  transaction = false;
+  private modalService = inject(ModalService);
   month: any[] = [];
   realData: Transaction[] = [];
   displayData: Transaction[] = [];
@@ -49,17 +50,17 @@ export class Expense {
   }
 
   openTransaction() {
-    this.transaction = true;
+    this.modalService.openTransactionModal(this.getObjUser(), null, () => this.fetchData());
   }
 
   closeTransaction() {
-    this.transaction = false;
+    this.modalService.closeTransactionModal();
     this.fetchData();
   }
 
   editTransaction(item: Transaction) {
     this.selectedTransaction = item;
-    this.transaction = true;
+    this.modalService.openTransactionModal(this.getObjUser(), item, () => this.fetchData());
   }
 
   deleteTransaction(id: number) {

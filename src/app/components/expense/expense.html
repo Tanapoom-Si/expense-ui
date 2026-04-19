@@ -124,11 +124,7 @@
             </div>
 
             <!-- Add Transaction Modal -->
-            @if (transaction) {
-            <app-add-transaction [user]="getObjUser()" [editData]="selectedTransaction"
-                (closeModel)="closeTransaction()" (transactionSaved)="fetchData()">
-            </app-add-transaction>
-            }
+            <!-- Modal moved to app level for proper viewport coverage -->
 
             <!-- Transaction List -->
             <div class="space-y-4 mt-8">
