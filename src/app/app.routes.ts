@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
-import { Dashboard } from './components/dashboard/dashboard';
 import { DashboardUser } from './components/dashboard-user/dashboard-user';
 import { Expense } from './components/expense/expense';
+import { Login } from './components/login/login';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-    // { path: '', component: Dashboard },
-    { path: '' , component: Expense},
-    { path: 'dashboard-user', component: DashboardUser },
-    // { path: 'expense' , component: Expense}
+    { path: 'login', component: Login },
+    { path: '', component: Expense, canActivate: [authGuard] },
+    { path: 'dashboard-user', component: DashboardUser, canActivate: [authGuard] },
 ];

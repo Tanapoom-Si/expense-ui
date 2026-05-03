@@ -1,6 +1,7 @@
-import { Component, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,9 +11,13 @@ import { CommonModule } from '@angular/common';
   styleUrl: './navbar.css',
 })
 export class Navbar {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   isSidebarOpen = signal(true);
   isCollapsed = signal(false);
-  window = window;
+
+  currentUser = this.authService.currentUser;
 
   toggleSidebar() {
     this.isSidebarOpen.update(val => !val);
@@ -20,5 +25,10 @@ export class Navbar {
 
   collapseSidebar() {
     this.isCollapsed.update(val => !val);
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
