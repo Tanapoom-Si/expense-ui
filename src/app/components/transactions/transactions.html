@@ -1,0 +1,203 @@
+<div class="w-full bg-transparent font-sans">
+  <div class="w-full space-y-6">
+
+    <!-- Header -->
+    <div class="backdrop-blur-xl bg-white/80 rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
+            รายการธุรกรรม
+          </h1>
+          <p class="text-slate-600">จัดการรายรับ-รายจ่ายทั้งหมดของคุณ</p>
+        </div>
+        <button (click)="openAddTransaction()"
+          class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 transform hover:scale-105">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>เพิ่มรายการ</span>
+        </button>
+      </div>
+    </div>
+
+    @if (isLoading()) {
+      <div class="flex flex-col items-center justify-center py-20 backdrop-blur-xl bg-white/80 rounded-2xl shadow-xl border border-white/20">
+        <div class="relative w-16 h-16 mb-4">
+          <div class="absolute inset-0 bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full animate-spin"></div>
+          <div class="absolute inset-2 bg-white rounded-full"></div>
+        </div>
+        <p class="text-slate-600 font-medium">กำลังโหลดข้อมูล...</p>
+      </div>
+    } @else if (hasError()) {
+      <div class="text-center py-16 backdrop-blur-xl bg-white/80 rounded-2xl shadow-xl border border-white/20">
+        <div class="mb-4 text-6xl">⚠️</div>
+        <p class="text-xl font-semibold text-red-600 mb-2">ไม่สามารถโหลดข้อมูลได้</p>
+        <button (click)="loadData()"
+          class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-2.5 rounded-lg font-medium shadow-lg transition-all">
+          ลองใหม่
+        </button>
+      </div>
+    } @else {
+
+      <!-- Filters -->
+      <div class="backdrop-blur-xl bg-white/80 rounded-2xl shadow-xl border border-white/20 p-4 sm:p-6">
+        <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+
+          <div class="relative flex-1 group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-3 h-5 w-5 text-slate-400 group-focus-within:text-emerald-600 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              #searchInput
+              (input)="onSearch(searchInput.value)"
+              type="text"
+              placeholder="ค้นหารายการ..."
+              class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all shadow-sm">
+          </div>
+
+          <select
+            #monthSelect
+            (change)="onMonthChange(monthSelect.value)"
+            class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-sm">
+            <option value="">ทุกเดือน</option>
+            @for (item of monthList; track item.value) {
+              <option [value]="item.value">{{ item.label }}</option>
+            }
+          </select>
+
+        </div>
+      </div>
+
+      <!-- Transaction Table -->
+      <div class="backdrop-blur-xl bg-white/80 rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+
+        <div class="px-6 py-4 border-b border-slate-200/50 flex items-center gap-2">
+          <h2 class="text-lg font-bold text-slate-800">ทั้งหมด</h2>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
+            {{ filteredTransactions().length }} รายการ
+          </span>
+        </div>
+
+        @if (pagedTransactions().length === 0) {
+          <div class="text-center py-16 text-slate-500">
+            <p class="mb-4">ไม่พบรายการ</p>
+          </div>
+        } @else {
+
+          <!-- Desktop Table -->
+          <div class="hidden md:block overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gradient-to-r from-slate-50 to-slate-100/50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">วันที่</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">ประเภท</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">รายการ</th>
+                  <th class="px-6 py-3 text-right text-xs font-bold text-slate-600 uppercase tracking-wider">จำนวนเงิน</th>
+                  <th class="px-6 py-3 text-center text-xs font-bold text-slate-600 uppercase tracking-wider">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100/50">
+                @for (item of pagedTransactions(); track item.id) {
+                  <tr class="hover:bg-emerald-50/40 transition-colors group">
+                    <td class="px-6 py-4 font-medium text-slate-700 whitespace-nowrap">{{ item.createDate | date:'d MMM yyyy' }}</td>
+                    <td class="px-6 py-4">
+                      <span class="px-3 py-1.5 rounded-full text-xs font-semibold"
+                        [ngClass]="item.categoryId.category_type === 'expense' ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'">
+                        {{ item.categoryId.category_type === 'expense' ? 'รายจ่าย' : 'รายรับ' }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 text-slate-700 font-medium">{{ item.categoryId.category_name }}</td>
+                    <td class="px-6 py-4 text-right font-bold"
+                      [ngClass]="item.categoryId.category_type === 'expense' ? 'text-red-600' : 'text-emerald-600'">
+                      {{ item.categoryId.category_type === 'expense' ? '-' : '+' }} ฿ {{ item.amount | number }}
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                      <div class="flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button (click)="openEditTransaction(item)"
+                          class="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-all">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          </svg>
+                        </button>
+                        <button (click)="deleteTransaction(item.id)"
+                          class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mobile Cards -->
+          <div class="md:hidden divide-y divide-slate-100/50">
+            @for (item of pagedTransactions(); track item.id) {
+              <div class="p-4 hover:bg-emerald-50/40 transition-colors">
+                <div class="flex items-start justify-between gap-3 mb-2">
+                  <div class="flex-1 min-w-0">
+                    <p class="font-semibold text-slate-700 truncate">{{ item.categoryId.category_name }}</p>
+                    <p class="text-xs text-slate-500 mt-1">{{ item.createDate | date:'d MMM yyyy' }}</p>
+                  </div>
+                  <span class="px-2 py-1 rounded-full text-xs font-semibold flex-shrink-0"
+                    [ngClass]="item.categoryId.category_type === 'expense' ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'">
+                    {{ item.categoryId.category_type === 'expense' ? 'รายจ่าย' : 'รายรับ' }}
+                  </span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <p class="font-bold text-lg"
+                    [ngClass]="item.categoryId.category_type === 'expense' ? 'text-red-600' : 'text-emerald-600'">
+                    {{ item.categoryId.category_type === 'expense' ? '-' : '+' }} ฿ {{ item.amount | number }}
+                  </p>
+                  <div class="flex gap-1">
+                    <button (click)="openEditTransaction(item)" class="p-2 text-amber-600 hover:bg-amber-50 rounded-lg">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    </button>
+                    <button (click)="deleteTransaction(item.id)" class="p-2 text-red-600 hover:bg-red-50 rounded-lg">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Pagination -->
+          @if (totalPages() > 1) {
+            <div class="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-slate-50 to-slate-100/50 border-t border-slate-200/50">
+              <div class="text-xs sm:text-sm text-slate-600 font-medium">
+                {{ (currentPage() - 1) * itemsPerPage + 1 }} - {{ Math.min(currentPage() * itemsPerPage, filteredTransactions().length) }} / {{ filteredTransactions().length }}
+              </div>
+              <div class="flex gap-1 items-center">
+                <button (click)="goToPage(currentPage() - 1)" [disabled]="currentPage() === 1"
+                  class="p-2 border border-slate-200 rounded-lg text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <span class="px-4 py-2 text-sm font-semibold text-slate-700">
+                  {{ currentPage() }} / {{ totalPages() }}
+                </span>
+                <button (click)="goToPage(currentPage() + 1)" [disabled]="currentPage() === totalPages()"
+                  class="p-2 border border-slate-200 rounded-lg text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          }
+
+        }
+      </div>
+
+    }
+  </div>
+</div>

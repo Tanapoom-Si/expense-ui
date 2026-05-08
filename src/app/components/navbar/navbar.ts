@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -18,6 +18,7 @@ export class Navbar {
   isCollapsed = signal(false);
 
   currentUser = this.authService.currentUser;
+  isAdmin = computed(() => this.authService.currentUser()?.role === 'admin');
 
   toggleSidebar() {
     this.isSidebarOpen.update(val => !val);

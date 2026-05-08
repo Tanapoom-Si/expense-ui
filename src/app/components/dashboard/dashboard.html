@@ -1,30 +1,133 @@
-<main class="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-slate-100 py-8 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-4xl mx-auto">
-    <div class="backdrop-blur-xl bg-white/80 rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8 space-y-6">
-      
-      <div class="flex flex-col gap-2">
-        <h1 class="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Dashboard</h1>
-        <p class="text-slate-600 font-medium">System Overview</p>
+<div class="w-full bg-transparent font-sans">
+  <div class="w-full space-y-6">
+
+    @if (isLoading()) {
+      <div class="flex flex-col items-center justify-center py-20 backdrop-blur-xl bg-white/80 rounded-2xl shadow-xl border border-white/20">
+        <div class="relative w-16 h-16 mb-4">
+          <div class="absolute inset-0 bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full animate-spin"></div>
+          <div class="absolute inset-2 bg-white rounded-full"></div>
+        </div>
+        <p class="text-slate-600 font-medium">กำลังโหลดข้อมูล...</p>
+      </div>
+    } @else if (hasError()) {
+      <div class="text-center py-16 backdrop-blur-xl bg-white/80 rounded-2xl shadow-xl border border-white/20">
+        <div class="mb-4 text-6xl">⚠️</div>
+        <p class="text-xl font-semibold text-red-600 mb-2">ไม่สามารถโหลดข้อมูลได้</p>
+        <button (click)="loadData()"
+          class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-2.5 rounded-lg font-medium shadow-lg transition-all">
+          ลองใหม่
+        </button>
+      </div>
+    } @else {
+
+      <!-- Header -->
+      <div class="backdrop-blur-xl bg-white/80 rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mb-2">
+              สวัสดี, {{ currentUser()?.username }} 👋
+            </h1>
+            <p class="text-slate-600">ภาพรวมการเงินของคุณวันนี้</p>
+          </div>
+          <div class="flex items-center gap-2 px-4 py-2 bg-white/40 backdrop-blur-sm rounded-xl border border-white/30 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span class="text-sm font-medium text-slate-700">{{ currentDate | date:'d MMM yyyy' }}</span>
+          </div>
+        </div>
       </div>
 
-      <div class="space-y-4">
-        <div class="flex items-center gap-2 mb-4">
-          <h2 class="text-xl font-bold text-slate-800">ผู้ใช้งานในระบบ</h2>
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-emerald-100 text-emerald-700">{{ users().length }} users</span>
+      <!-- Stat Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+
+        <div class="sm:col-span-2 lg:col-span-1 backdrop-blur-xl bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-600 rounded-2xl p-6 text-white shadow-2xl border border-white/20 relative overflow-hidden">
+          <div class="absolute -right-20 -top-20 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+          <div class="relative z-10">
+            <p class="text-emerald-100 text-xs sm:text-sm font-semibold uppercase tracking-wider mb-2">ยอดคงเหลือสุทธิ</p>
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">฿ {{ balance() | number }}</h2>
+            <p class="text-emerald-100 text-xs sm:text-sm">อัปเดตล่าสุดวันนี้</p>
+          </div>
         </div>
-        <div class="grid gap-4">
-          @for (user of users(); track user.username) {
-            <div class="flex items-center justify-between p-5 backdrop-blur-sm bg-gradient-to-r from-white/60 to-emerald-50/40 rounded-xl border border-white/30 hover:border-emerald-300/50 hover:shadow-lg transition-all duration-300 group">
-              <div class="flex-1">
-                <p class="font-bold text-slate-700 group-hover:text-emerald-600 transition-colors">{{ user.username }}</p>
-                <p class="text-sm text-slate-500">{{ user.email }}</p>
-              </div>
-              <span class="px-4 py-1.5 bg-gradient-to-r from-emerald-100 to-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200/50 shadow-sm">Active</span>
+
+        <div class="backdrop-blur-xl bg-gradient-to-br from-emerald-50 via-white to-emerald-50 rounded-2xl p-6 border border-emerald-200/30 shadow-lg">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-slate-600 text-xs font-bold uppercase tracking-wider mb-2">รายรับรวม</p>
+              <h3 class="text-2xl sm:text-3xl font-bold text-emerald-600">฿ {{ totalIncome() | number }}</h3>
             </div>
-          }
+            <div class="p-3 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-xl text-emerald-600 shadow-md">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+          </div>
         </div>
+
+        <div class="backdrop-blur-xl bg-gradient-to-br from-red-50 via-white to-red-50 rounded-2xl p-6 border border-red-200/30 shadow-lg">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-slate-600 text-xs font-bold uppercase tracking-wider mb-2">รายจ่ายรวม</p>
+              <h3 class="text-2xl sm:text-3xl font-bold text-red-600">฿ {{ totalExpense() | number }}</h3>
+            </div>
+            <div class="p-3 bg-gradient-to-br from-red-100 to-red-50 rounded-xl text-red-600 shadow-md">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
       </div>
 
-    </div>
+      <!-- Recent Transactions Preview -->
+      <div class="backdrop-blur-xl bg-white/80 rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-2">
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-800">รายการล่าสุด</h2>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">5 ล่าสุด</span>
+          </div>
+          <button (click)="goToTransactions()"
+            class="text-sm font-semibold text-emerald-600 hover:text-emerald-700 hover:underline transition-colors flex items-center gap-1">
+            ดูทั้งหมด
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+        @if (recentTransactions().length === 0) {
+          <div class="text-center py-12 text-slate-500">
+            <p class="mb-3">ยังไม่มีรายการ</p>
+            <button (click)="goToTransactions()"
+              class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-2.5 rounded-xl font-semibold shadow-lg transition-all">
+              เพิ่มรายการแรก
+            </button>
+          </div>
+        } @else {
+          <div class="space-y-2">
+            @for (item of recentTransactions(); track item.id) {
+              <div class="flex items-center justify-between p-4 bg-white/60 hover:bg-white/90 rounded-xl border border-white/30 hover:shadow-md transition-all">
+                <div class="flex items-center gap-3 min-w-0 flex-1">
+                  <span class="px-3 py-1.5 rounded-full text-xs font-semibold flex-shrink-0"
+                    [ngClass]="item.categoryId.category_type === 'expense' ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'">
+                    {{ item.categoryId.category_type === 'expense' ? 'รายจ่าย' : 'รายรับ' }}
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <p class="font-semibold text-slate-700 truncate">{{ item.categoryId.category_name }}</p>
+                    <p class="text-xs text-slate-500">{{ item.createDate | date:'d MMM yyyy' }}</p>
+                  </div>
+                </div>
+                <div class="font-bold text-right flex-shrink-0 ml-3"
+                  [ngClass]="item.categoryId.category_type === 'expense' ? 'text-red-600' : 'text-emerald-600'">
+                  {{ item.categoryId.category_type === 'expense' ? '-' : '+' }} ฿ {{ item.amount | number }}
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+    }
   </div>
-</main>
+</div>

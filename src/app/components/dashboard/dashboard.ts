@@ -1,33 +1,53 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Router } from '@angular/router';
+import { DecimalPipe, DatePipe, NgClass } from '@angular/common';
+import { TransactionService } from '../../services/transaction.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [DecimalPipe, DatePipe, NgClass],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
-  private http = inject(HttpClient);
-  users = signal<any[]>([]);
-  
-  isAdding = signal<boolean>(false);
+  private transactionService = inject(TransactionService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  ngOnInit(): void {
-    this.fetchUsers();
+  currentUser = this.authService.currentUser;
+  isLoading = signal(true);
+  hasError = signal(false);
+  currentDate = new Date();
+
+  balance = this.transactionService.balance;
+  totalIncome = this.transactionService.totalIncome;
+  totalExpense = this.transactionService.totalExpense;
+
+  recentTransactions = computed(() =>
+    [...this.transactionService.transactions()]
+      .sort((a, b) => new Date(b.createDate).getTime() - new Date(a.createDate).getTime())
+      .slice(0, 5)
+  );
+
+  ngOnInit() {
+    this.loadData();
   }
 
-  fetchUsers(){
-    this.http.get<any[]>('http://localhost:8080/api/user')
-      .subscribe({
-        next: (data) => this.users.set(data),
-        error: (err) => console.error('Failed to fetch users:', err)
-      })
+  loadData() {
+    this.isLoading.set(true);
+    this.hasError.set(false);
+    this.transactionService.fetchTransactions().subscribe({
+      next: () => this.isLoading.set(false),
+      error: () => {
+        this.isLoading.set(false);
+        this.hasError.set(true);
+      },
+    });
   }
 
-  toggleForm(){
-    this.isAdding.update(value => !value)
+  goToTransactions() {
+    this.router.navigate(['/transactions']);
   }
 }

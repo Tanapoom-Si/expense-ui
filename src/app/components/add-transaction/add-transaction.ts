@@ -1,10 +1,16 @@
-import { Component, inject, output, Input, Output, EventEmitter } from '@angular/core';
+import { Component, inject, output, Input, Output, EventEmitter, OnInit, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import Swal from 'sweetalert2';
 import { User } from '../../models/user.model';
 import { Transaction } from '../../models/transaction.model';
-import Swal from 'sweetalert2';
+import { TransactionService } from '../../services/transaction.service';
+
+interface CategoryOption {
+  value: string;
+  label: string;
+  icon: string;
+}
 
 @Component({
   selector: 'app-add-transaction',
@@ -13,34 +19,60 @@ import Swal from 'sweetalert2';
   templateUrl: './add-transaction.html',
   styleUrl: './add-transaction.css',
 })
-export class AddTransaction {
+export class AddTransaction implements OnInit {
   closeModel = output<void>();
   @Input() user: User | undefined;
   @Input() editData: Transaction | null = null;
-  formData = {
-    id: null as number | null,
-    type: 'income',
-    date: new Date().toISOString().split('T')[0],
-    title: '',
-    amount: null,
-    user: {} as User
-  };
-
   @Output() transactionSaved = new EventEmitter<void>();
 
-  showToast = false;
-  toastMessage = '';
-  toastType: 'success' | 'error' = 'success';
+  private transactionService = inject(TransactionService);
 
-  private http = inject(HttpClient);
+  type = signal<'income' | 'expense'>('income');
 
+  formData = {
+    id: null as number | null,
+    date: new Date().toISOString().split('T')[0],
+    title: '',
+    amount: null as number | null,
+    note: '',
+    user: {} as User,
+  };
+
+  isSaving = false;
+
+  readonly incomeCategories: CategoryOption[] = [
+    { value: 'เงินเดือน', label: 'เงินเดือน', icon: '💼' },
+    { value: 'โบนัส', label: 'โบนัส', icon: '🎁' },
+    { value: 'รายได้พิเศษ', label: 'รายได้พิเศษ', icon: '💰' },
+    { value: 'การลงทุน', label: 'การลงทุน', icon: '📈' },
+    { value: 'ของขวัญ', label: 'ของขวัญ', icon: '🎉' },
+    { value: 'อื่นๆ', label: 'อื่นๆ', icon: '✨' },
+  ];
+
+  readonly expenseCategories: CategoryOption[] = [
+    { value: 'อาหาร', label: 'อาหาร', icon: '🍱' },
+    { value: 'เดินทาง', label: 'เดินทาง', icon: '🚗' },
+    { value: 'ช้อปปิ้ง', label: 'ช้อปปิ้ง', icon: '🛍️' },
+    { value: 'บันเทิง', label: 'บันเทิง', icon: '🎬' },
+    { value: 'สาธารณูปโภค', label: 'สาธารณูปโภค', icon: '💡' },
+    { value: 'สุขภาพ', label: 'สุขภาพ', icon: '🏥' },
+    { value: 'การศึกษา', label: 'การศึกษา', icon: '📚' },
+    { value: 'อื่นๆ', label: 'อื่นๆ', icon: '✨' },
+  ];
+
+  categoryOptions = computed(() =>
+    this.type() === 'income' ? this.incomeCategories : this.expenseCategories
+  );
 
   close() {
     this.closeModel.emit();
   }
 
-  setType(type: string) {
-    this.formData.type = type;
+  setType(newType: 'income' | 'expense') {
+    if (this.type() !== newType) {
+      this.type.set(newType);
+      this.formData.title = '';
+    }
   }
 
   ngOnInit() {
@@ -49,80 +81,70 @@ export class AddTransaction {
     }
 
     if (this.editData) {
-      console.log('Edit mode: data received', this.editData);
+      this.type.set(this.editData.categoryId.category_type as 'income' | 'expense');
       this.formData = {
         id: this.editData.id,
-        type: this.editData.categoryId.category_type,
         date: this.editData.createDate,
         title: this.editData.categoryId.category_name,
-        amount: this.editData.amount as any,
-        user: this.editData.user
+        amount: this.editData.amount,
+        note: this.editData.note ?? '',
+        user: this.editData.user,
       };
     }
   }
 
-  isSaving = false;
   saveTransaction() {
-    const backendApi = 'http://localhost:8080/api/transaction';
+    if (!this.formData.title) {
+      Swal.fire('ข้อมูลไม่ครบ', 'กรุณาเลือกหมวดหมู่', 'warning');
+      return;
+    }
+    if (!this.formData.amount || this.formData.amount <= 0) {
+      Swal.fire('ข้อมูลไม่ครบ', 'กรุณากรอกจำนวนเงิน', 'warning');
+      return;
+    }
+
     this.isSaving = true;
 
-    // Ensure user data is included in the transaction
-    if (!this.formData.user || Object.keys(this.formData.user).length === 0) {
-      this.formData.user = this.user || {} as User;
-    }
+    const payload = {
+      ...this.formData,
+      type: this.type(),
+      user: this.formData.user && Object.keys(this.formData.user).length > 0
+        ? this.formData.user
+        : (this.user || ({} as User)),
+    };
 
-    if (this.editData) {
-      // UPDATE case
-      this.http.put(backendApi, this.formData).subscribe({
-        next: () => this.handleSuccess('อัปเดตรายการเรียบร้อยแล้ว'),
-        error: (err) => this.handleError(err)
-      });
-    } else {
-      // INSERT case - send user data to backend
-      this.http.post(backendApi, this.formData).subscribe({
-        next: () => this.handleSuccess('บันทึกรายการเรียบร้อยแล้ว'),
-        error: (err) => this.handleError(err)
-      });
-    }
+    const request$ = this.editData
+      ? this.transactionService.updateTransaction(payload)
+      : this.transactionService.addTransaction(payload);
+
+    request$.subscribe({
+      next: () => this.handleSuccess(this.editData ? 'อัปเดตรายการเรียบร้อยแล้ว' : 'บันทึกรายการเรียบร้อยแล้ว'),
+      error: (err) => this.handleError(err),
+    });
   }
 
   private handleSuccess(message: string) {
-    // Emit event to notify parent/app to refresh data
     this.transactionSaved.emit();
-
     Swal.fire({
-      title: 'Success!',
+      title: 'สำเร็จ!',
       text: message,
       icon: 'success',
       timer: 1500,
       showConfirmButton: false,
-      timerProgressBar: true
+      timerProgressBar: true,
     }).then(() => {
       this.isSaving = false;
       this.close();
     });
   }
 
-  // Helper for displaying errors
   private handleError(err: any) {
     this.isSaving = false;
-    console.error(err);
     Swal.fire({
       title: 'เกิดข้อผิดพลาด!',
-      text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
+      text: 'ไม่สามารถบันทึกข้อมูลได้',
       icon: 'error',
-      confirmButtonText: 'ตกลง'
+      confirmButtonText: 'ตกลง',
     });
-  }
-
-  triggerToast(message: string, type: 'success' | 'error') {
-    this.toastMessage = message;
-    this.toastType = type;
-    this.showToast = true;
-
-    setTimeout(() => {
-      this.showToast = false;
-
-    }, 3000);
   }
 }

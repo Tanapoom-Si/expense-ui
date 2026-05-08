@@ -34,8 +34,8 @@
   <!-- Navigation Menu -->
   <nav class="flex-1 px-2 py-4 space-y-1 overflow-hidden transition-all duration-300"
     [class.px-4]="!isCollapsed()">
-    <!-- Dashboard Link (Only Navigation Item) -->
-    <a routerLink="/" 
+
+    <a routerLink="/"
        routerLinkActive="bg-gradient-to-r from-emerald-500/25 to-teal-500/25 border-l-2 border-emerald-400 shadow-lg shadow-emerald-500/20"
        [routerLinkActiveOptions]="{exact: true}"
        class="flex items-center justify-center lg:justify-start gap-4 px-2 py-3 text-slate-200 hover:bg-slate-700/40 rounded-lg transition-all duration-300 ease-out group"
@@ -48,6 +48,36 @@
       <span class="font-medium text-sm flex-1">Dashboard</span>
       }
     </a>
+
+    <a routerLink="/transactions"
+       routerLinkActive="bg-gradient-to-r from-emerald-500/25 to-teal-500/25 border-l-2 border-emerald-400 shadow-lg shadow-emerald-500/20"
+       class="flex items-center justify-center lg:justify-start gap-4 px-2 py-3 text-slate-200 hover:bg-slate-700/40 rounded-lg transition-all duration-300 ease-out group"
+       [class.px-4]="!isCollapsed()"
+       [title]="isCollapsed() ? 'Transactions' : ''">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-400 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+      </svg>
+      @if (!isCollapsed()) {
+      <span class="font-medium text-sm flex-1">รายการธุรกรรม</span>
+      }
+    </a>
+
+    @if (isAdmin()) {
+      <a routerLink="/users"
+         routerLinkActive="bg-gradient-to-r from-emerald-500/25 to-teal-500/25 border-l-2 border-emerald-400 shadow-lg shadow-emerald-500/20"
+         class="flex items-center justify-center lg:justify-start gap-4 px-2 py-3 text-slate-200 hover:bg-slate-700/40 rounded-lg transition-all duration-300 ease-out group"
+         [class.px-4]="!isCollapsed()"
+         [title]="isCollapsed() ? 'Users' : ''">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-400 flex-shrink-0 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        @if (!isCollapsed()) {
+        <span class="font-medium text-sm flex-1">ผู้ใช้งาน</span>
+        <span class="px-2 py-0.5 bg-amber-500/20 text-amber-300 text-xs font-bold rounded-full border border-amber-400/30">Admin</span>
+        }
+      </a>
+    }
+
   </nav>
 
   <!-- Bottom Section: Collapse Toggle (Hidden on Mobile) -->
