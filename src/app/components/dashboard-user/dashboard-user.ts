@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal  } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { AddUser } from '../add-user/add-user';
+import { AppConfig } from '../../config';
 
 @Component({
   selector: 'app-dashboard-user',
@@ -22,7 +23,7 @@ export class DashboardUser {
     }
 
     fetchUsers(){
-      this.http.get<any[]>('http://localhost:8080/api/user')
+      this.http.get<any[]>(`${AppConfig.apiBase}/user`)
         .subscribe({
           next: (data) => this.users.set(data),
           error: (err) => console.error('ดึงข้อมูลไม่สำเร็จ:', err)
@@ -36,7 +37,7 @@ export class DashboardUser {
 
     deleteUser(username : String){
       if(confirm('คุณแน่ใจหรือไม่ที่จะลบผู้ใช้ ' + username + '?')){
-        this.http.delete('http://localhost:8080/api/user/' + username)
+        this.http.delete(`${AppConfig.apiBase}/user/${username}`)
           .subscribe({
             next:() => {
               alert('ลบข้อมูลสำเร็จ!');

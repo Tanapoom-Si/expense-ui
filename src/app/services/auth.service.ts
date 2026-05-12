@@ -2,6 +2,7 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, switchMap, tap } from 'rxjs';
 import { User } from '../models/user.model';
+import { AppConfig } from '../config';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class AuthService {
 
   login(username: string, password: string): Observable<User> {
     return this.http
-      .post<User>('http://localhost:8080/api/auth/login', { username, password })
+      .post<User>(`${AppConfig.apiBase}/auth/login`, { username, password })
       .pipe(
         tap((user) => {
           this.currentUser.set(user);
@@ -27,7 +28,7 @@ export class AuthService {
   register(username: string, email: string, password: string): Observable<User> {
     const newUser = { username, email, password };
     return this.http
-      .post<User>('http://localhost:8080/api/auth/register', newUser)
+      .post<User>(`${AppConfig.apiBase}/auth/register`, newUser)
       .pipe(switchMap(() => this.login(username, password)));
   }
 

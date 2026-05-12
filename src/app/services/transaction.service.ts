@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of, tap } from 'rxjs';
 import { Transaction } from '../models/transaction.model';
 import { AuthService } from './auth.service';
+import { AppConfig } from '../config';
 
 @Injectable({ providedIn: 'root' })
 export class TransactionService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private readonly API_URL = 'http://localhost:8080/api/transaction';
+  private readonly API_URL = `${AppConfig.apiBase}/transaction`;
 
   transactions = signal<Transaction[]>([]);
 

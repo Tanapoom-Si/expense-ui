@@ -1,6 +1,7 @@
 import { Component, inject, Input, OnChanges, output, SimpleChanges } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { FormsModule } from '@angular/forms';
+import { AppConfig } from '../../config';
 
 @Component({
   selector: 'app-add-user',
@@ -45,7 +46,7 @@ export class AddUser implements OnChanges{
 
 
     if(this.userData){
-      this.http.put('http://localhost:8080/api/user/' + this.userData.username, userPayload)
+      this.http.put(`${AppConfig.apiBase}/user/${this.userData.username}`, userPayload)
         .subscribe({
           next: () => {
             alert('แก้ไข ' + this.username + ' เรียบร้อย');
@@ -53,7 +54,7 @@ export class AddUser implements OnChanges{
           }
         });
     }else{
-      this.http.post('http://localhost:8080/api/user', userPayload)
+      this.http.post(`${AppConfig.apiBase}/user`, userPayload)
         .subscribe({
           next: () => {
             alert('เพิ่ม ' + this.username +' เรียบร้อย');
