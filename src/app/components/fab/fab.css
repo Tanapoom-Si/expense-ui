@@ -1,0 +1,8 @@
+:host {
+  display: block;
+}
+
+button {
+  /* Offset by safe area inset at bottom to stay above bottom nav */
+  margin-bottom: env(safe-area-inset-bottom);
+}

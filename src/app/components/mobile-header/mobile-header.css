@@ -1,0 +1,9 @@
+:host {
+  display: block;
+}
+
+header {
+  /* Safe area inset for modern mobile devices */
+  padding-top: env(safe-area-inset-top);
+  height: calc(4rem + env(safe-area-inset-top));
+}

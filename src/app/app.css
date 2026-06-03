@@ -12,19 +12,19 @@ html, body {
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  background-color: #f8fafc; /* slate-50 */
 }
 
 /* Main content area with smooth transitions */
 main {
-  height: 100vh;
+  min-height: 100vh;
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Responsive: Adjust main content area when sidebar is hidden */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   main {
     margin-left: 0 !important;
   }

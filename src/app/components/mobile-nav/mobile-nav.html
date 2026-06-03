@@ -1,0 +1,33 @@
+<nav class="fixed bottom-0 left-0 right-0 h-16 bg-white/90 backdrop-blur-xl border-t border-slate-200 z-40 flex items-center justify-around px-2 lg:hidden shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+  
+  <a routerLink="/"
+     [routerLinkActiveOptions]="{exact: true}"
+     routerLinkActive="text-emerald-600"
+     class="flex flex-col items-center justify-center gap-1 w-full text-slate-400 transition-all duration-300">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 11l4-4m0 0l4 4m-4-4V3" />
+    </svg>
+    <span class="text-[10px] font-bold uppercase tracking-wider">Dashboard</span>
+  </a>
+
+  <a routerLink="/transactions"
+     routerLinkActive="text-emerald-600"
+     class="flex flex-col items-center justify-center gap-1 w-full text-slate-400 transition-all duration-300">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+    </svg>
+    <span class="text-[10px] font-bold uppercase tracking-wider">Transactions</span>
+  </a>
+
+  @if (isAdmin()) {
+    <a routerLink="/users"
+       routerLinkActive="text-emerald-600"
+       class="flex flex-col items-center justify-center gap-1 w-full text-slate-400 transition-all duration-300">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+      </svg>
+      <span class="text-[10px] font-bold uppercase tracking-wider">Users</span>
+    </a>
+  }
+
+</nav>
