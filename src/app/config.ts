@@ -1,4 +1,7 @@
+import { isDevMode } from '@angular/core';
+
 export const AppConfig = {
-  //apiBase: 'https://janet-dated-roller-dated.trycloudflare.com/api'
-  apiBase: 'http://localhost:8080/api'
+  apiBase: isDevMode()
+    ? 'http://localhost:8080/api'                           
+    : 'https://janet-dated-roller-dated.trycloudflare.com/api' 
 };
