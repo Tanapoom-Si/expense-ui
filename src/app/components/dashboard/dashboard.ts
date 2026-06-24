@@ -3,11 +3,13 @@ import { Router } from '@angular/router';
 import { DecimalPipe, DatePipe, NgClass } from '@angular/common';
 import { TransactionService } from '../../services/transaction.service';
 import { AuthService } from '../../services/auth.service';
+import { Chart } from '../chart/chart';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [DecimalPipe, DatePipe, NgClass],
+  imports: [DecimalPipe, DatePipe,CommonModule, Chart],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
