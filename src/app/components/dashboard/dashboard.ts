@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { DecimalPipe, DatePipe, NgClass } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { TransactionService } from '../../services/transaction.service';
 import { AuthService } from '../../services/auth.service';
 import { Chart } from '../chart/chart';
@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [DecimalPipe, DatePipe,CommonModule, Chart],
+  imports: [DecimalPipe, CommonModule, Chart],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -22,6 +22,7 @@ export class Dashboard implements OnInit {
   isLoading = signal(true);
   hasError = signal(false);
   currentDate = new Date();
+  selectedRangeDays = 14;
 
   balance = this.transactionService.balance;
   totalIncome = this.transactionService.totalIncome;
@@ -51,5 +52,19 @@ export class Dashboard implements OnInit {
 
   goToTransactions() {
     this.router.navigate(['/transactions']);
+  }
+
+  currentChart = 1;
+
+  setRange(days: number) {
+    this.selectedRangeDays = days;
+  }
+
+  showChart1() {
+    this.currentChart = 1;
+  }
+
+  showChart2() {
+    this.currentChart = 2;
   }
 }

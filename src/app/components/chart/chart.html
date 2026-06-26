@@ -1,11 +1,54 @@
-<div id="chart">
+<div class="relative min-h-[400px]">
+
+  <div
+    class="absolute inset-0 transition-all duration-300"
+    [class.opacity-100]="currentChart === 1"
+    [class.opacity-0]="currentChart !== 1"
+    [class.pointer-events-none]="currentChart !== 1">
+
+    @if (hasDailyData()) {
     <apx-chart
-        [series]="chartOptions.series!"
-        [chart]="chartOptions.chart!"
-        [plotOptions]="chartOptions.plotOptions!"
-        [dataLabels]="chartOptions.dataLabels!"
-        [xaxis]="chartOptions.xaxis!"
-        [yaxis]="chartOptions.yaxis!"
-        [title]="chartOptions.title!"
-    ></apx-chart>
+      [series]="chartOptions().series!"
+      [chart]="chartOptions().chart!"
+      [colors]="chartOptions().colors!"
+      [plotOptions]="chartOptions().plotOptions!"
+      [dataLabels]="chartOptions().dataLabels!"
+      [xaxis]="chartOptions().xaxis!"
+      [yaxis]="chartOptions().yaxis!"
+      [legend]="chartOptions().legend!"
+      [tooltip]="chartOptions().tooltip!"
+      [title]="chartOptions().title!">
+    </apx-chart>
+    } @else {
+    <div class="flex h-[350px] items-center justify-center text-sm text-slate-500">
+      ยังไม่มีข้อมูลสำหรับแสดงกราฟรายวัน
     </div>
+    }
+
+  </div>
+
+  <div
+    class="absolute inset-0 transition-all duration-300"
+    [class.opacity-100]="currentChart === 2"
+    [class.opacity-0]="currentChart !== 2"
+    [class.pointer-events-none]="currentChart !== 2">
+
+    @if (hasCategoryData()) {
+    <apx-chart
+      [series]="chartPieOptions().series!"
+      [chart]="chartPieOptions().chart!"
+      [colors]="chartPieOptions().colors!"
+      [labels]="chartPieOptions().labels!"
+      [legend]="chartPieOptions().legend!"
+      [tooltip]="chartPieOptions().tooltip!"
+      [responsive]="chartPieOptions().responsive!">
+    </apx-chart>
+    } @else {
+    <div class="flex h-[350px] items-center justify-center text-sm text-slate-500">
+      ยังไม่มีข้อมูลรายจ่ายตามหมวดหมู่
+    </div>
+    }
+
+  </div>
+
+</div>
