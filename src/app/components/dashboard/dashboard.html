@@ -24,24 +24,30 @@
     <!-- Header -->
     <div class="flex justify-between">
       <div>สรุปรายการ</div>
-      <!-- <div class="flex">
+      <div class="flex flex-wrap gap-2">
         <div class="px-4">
-          <button
-            class="bg-transparent hover:bg-emerald-500 text-black-700 font-semibold  py-2 px-4 border border-grey-500 hover:border-transparent rounded">
+          <button (click)="setRange(7)"
+            class="bg-transparent hover:bg-emerald-500 text-black-700 font-semibold py-2 px-4 border border-grey-500 hover:border-transparent rounded transition-colors"
+            [class.bg-emerald-500]="selectedRangeDays === 7" [class.text-white]="selectedRangeDays === 7"
+            [class.border-emerald-500]="selectedRangeDays === 7">
             7 วัน
           </button>
         </div>
-        <div class="px-4"> <button
-            class="bg-transparent hover:bg-emerald-500 text-black-700 font-semibold  py-2 px-4 border border-grey-500 hover:border-transparent rounded">
+        <div class="px-4"> <button (click)="setRange(14)"
+            class="bg-transparent hover:bg-emerald-500 text-black-700 font-semibold py-2 px-4 border border-grey-500 hover:border-transparent rounded transition-colors"
+            [class.bg-emerald-500]="selectedRangeDays === 14" [class.text-white]="selectedRangeDays === 14"
+            [class.border-emerald-500]="selectedRangeDays === 14">
             14 วัน
           </button>
         </div>
-        <div class="px-4"> <button
-            class="bg-transparent hover:bg-emerald-500 text-black-700 font-semibold  py-2 px-4 border border-grey-500 hover:border-transparent rounded">
+        <div class="px-4"> <button (click)="setRange(30)"
+            class="bg-transparent hover:bg-emerald-500 text-black-700 font-semibold py-2 px-4 border border-grey-500 hover:border-transparent rounded transition-colors"
+            [class.bg-emerald-500]="selectedRangeDays === 30" [class.text-white]="selectedRangeDays === 30"
+            [class.border-emerald-500]="selectedRangeDays === 30">
             เดือนนี้
           </button>
         </div>
-      </div> -->
+      </div>
     </div>
 
     <!-- Stat Cards -->
@@ -112,7 +118,7 @@
         </button>
 
       </div>
-      <app-chart [currentChart]="currentChart"></app-chart>
+      <app-chart [currentChart]="currentChart" [rangeDays]="selectedRangeDays"></app-chart>
     </div>
 
     <!-- <div class="">

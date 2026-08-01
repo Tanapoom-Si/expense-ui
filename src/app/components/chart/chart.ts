@@ -1,4 +1,4 @@
-import { Component, Input, computed, inject } from '@angular/core';
+import { Component, Input, computed, inject, input } from '@angular/core';
 import {
   ApexAxisChartSeries,
   ApexNonAxisChartSeries,
@@ -61,36 +61,55 @@ type DailySummary = {
 })
 export class Chart {
   @Input() currentChart = 1;
+  rangeDays = input(14);
 
   private transactionService = inject(TransactionService);
+
+  private filteredTransactions = computed(() => {
+    const transactions = this.transactionService.transactions();
+    const transactionDates = transactions
+      .map((transaction) => this.toTransactionDate(transaction.createDate))
+      .filter((date): date is Date => date !== null);
+    const endDate = transactionDates.length
+      ? new Date(Math.max(...transactionDates.map((date) => date.getTime())))
+      : new Date();
+    const startDate = this.getRangeStartDate(this.rangeDays(), endDate);
+
+    return transactions.filter((transaction) => {
+      const transactionDate = this.toTransactionDate(transaction.createDate);
+      return transactionDate !== null && transactionDate >= startDate && transactionDate <= endDate;
+    });
+  });
 
   dailySummaries = computed(() => {
     const summaries = new Map<string, DailySummary>();
 
-    for (const transaction of this.transactionService.transactions()) {
+    for (const transaction of this.filteredTransactions()) {
       const date = this.toDateKey(transaction.createDate);
       if (!date) continue;
 
       const current = summaries.get(date) ?? { date, income: 0, expense: 0 };
       if (this.isIncome(transaction)) {
-        current.income += transaction.amount || 0;
+        current.income += this.toAmount(transaction.amount);
       } else if (this.isExpense(transaction)) {
-        current.expense += transaction.amount || 0;
+        current.expense += this.toAmount(transaction.amount);
       }
       summaries.set(date, current);
     }
 
-    return [...summaries.values()].sort((a, b) => a.date.localeCompare(b.date)).slice(-14);
+    return [...summaries.values()]
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(-this.rangeDays());
   });
 
   categorySummaries = computed(() => {
     const summaries = new Map<string, number>();
 
-    for (const transaction of this.transactionService.transactions()) {
+    for (const transaction of this.filteredTransactions()) {
       if (!this.isExpense(transaction)) continue;
 
       const category = transaction.categoryId?.category_name || 'Uncategorized';
-      summaries.set(category, (summaries.get(category) ?? 0) + (transaction.amount || 0));
+      summaries.set(category, (summaries.get(category) ?? 0) + this.toAmount(transaction.amount));
     }
 
     return [...summaries.entries()]
@@ -224,9 +243,31 @@ export class Chart {
     return value.substring(0, 10);
   }
 
+  private toTransactionDate(value: string | null | undefined) {
+    const dateKey = this.toDateKey(value);
+    const [year, month, day] = dateKey.split('-').map(Number);
+
+    if (!year || !month || !day) return null;
+
+    const date = new Date(year, month - 1, day);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  private getRangeStartDate(days: number, endDate: Date) {
+    const startDate = new Date(endDate);
+    startDate.setHours(0, 0, 0, 0);
+    startDate.setDate(startDate.getDate() - days + 1);
+    return startDate;
+  }
+
+  private toAmount(value: number | null | undefined) {
+    const amount = Number(value);
+    return Number.isFinite(amount) ? amount : 0;
+  }
+
   private formatDateLabel(date: string) {
-    const parsed = new Date(date);
-    if (Number.isNaN(parsed.getTime())) return date;
+    const parsed = this.toTransactionDate(date);
+    if (!parsed) return date;
 
     return parsed.toLocaleDateString('th-TH', {
       day: '2-digit',

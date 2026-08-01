@@ -23,7 +23,7 @@ export class Dashboard implements OnInit {
   hasError = signal(false);
   currentDate = new Date();
   selectedRangeDays = 14;
-
+  
   balance = this.transactionService.balance;
   totalIncome = this.transactionService.totalIncome;
   totalExpense = this.transactionService.totalExpense;
